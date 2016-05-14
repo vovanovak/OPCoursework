@@ -1,0 +1,50 @@
+﻿<Window x:Class="Coursework.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Інтерполяція" Height="626" Width="996" Closed="Window_Closed">
+    <Grid Name="mainGrid" Margin="0,1,2,-3">
+        <Grid HorizontalAlignment="Left" Height="162" Margin="10,266,0,0" VerticalAlignment="Top" Width="185"/>
+        <Grid Margin="48,0,37,24" HorizontalAlignment="Center" Height="219" VerticalAlignment="Bottom">
+            <Grid HorizontalAlignment="Left" Height="209" Margin="13,6,0,0" VerticalAlignment="Top" Width="185">
+                <Label Content="Додати точку:" HorizontalAlignment="Left" Margin="10,14,0,0" VerticalAlignment="Top" Height="26" Width="86"/>
+                <Label Content="X:" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Height="26" Width="20"/>
+                <Label Content="Y:" HorizontalAlignment="Left" Margin="10,71,0,0" VerticalAlignment="Top" Height="26" Width="19"/>
+                <TextBox x:Name="txtAddX" HorizontalAlignment="Left" Height="23" Margin="45,44,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                <TextBox x:Name="txtAddY" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Margin="45,75,0,0"/>
+                <Button x:Name="btnAdd" Content="Додати" HorizontalAlignment="Left" Margin="10,118,0,0" VerticalAlignment="Top" Width="155" Click="btnAdd_Click" Height="20"/>
+                <Button x:Name="btnDelete" Content="Видалити" HorizontalAlignment="Left" Margin="10,149,0,0" VerticalAlignment="Top" Width="155" Height="20" Click="btnDelete_Click"/>
+                <Button x:Name="btnDeleteAll" Content="Очистити" HorizontalAlignment="Left" Margin="10,179,0,0" VerticalAlignment="Top" Width="155" Height="20" Click="btnDeleteAll_Click"/>
+            </Grid>
+            <Grid HorizontalAlignment="Left" Height="209" Margin="218,6,0,0" VerticalAlignment="Top" Width="185">
+                <Label Content="Обрахувати:" HorizontalAlignment="Left" Margin="10,74,0,0" VerticalAlignment="Top"/>
+                <TextBox x:Name="txtX" HorizontalAlignment="Left" Height="23" Margin="35,101,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="130"/>
+                <Label Content="Х:" HorizontalAlignment="Left" Margin="10,98,0,0" VerticalAlignment="Top"/>
+                <Label Content="Y:" HorizontalAlignment="Left" Margin="10,129,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.474,0.538"/>
+                <Label x:Name="lblY" Content="" HorizontalAlignment="Left" Margin="35,129,0,0" VerticalAlignment="Top"/>
+                <Button x:Name="btnCount" Content="Обрахувати" HorizontalAlignment="Left" Margin="10,178,0,-36" VerticalAlignment="Top" Width="155" Click="btnCount_Click"/>
+                <Label Content="Метод інтерполяції: " HorizontalAlignment="Left" Margin="10,13,0,0" VerticalAlignment="Top"/>
+                <ComboBox x:Name="comboBoxMethod" HorizontalAlignment="Left" Margin="12,44,0,0" VerticalAlignment="Top" Width="153" SelectedIndex="0" SelectionChanged="comboBoxMethod_SelectionChanged">
+                    <ComboBoxItem Content="Лінійний"/>
+                    <ComboBoxItem Content="Квадратичний"/>
+                </ComboBox>
+                <CheckBox x:Name="drawPolynom" Content="Відрисовувати поліном" HorizontalAlignment="Left" Margin="10,156,0,0" VerticalAlignment="Top" Checked="drawPolynom_Checked" Unchecked="drawPolynom_Unchecked"/>
+            </Grid>
+            <Grid HorizontalAlignment="Left" Height="205" Margin="438,10,0,0" VerticalAlignment="Top" Width="185">
+                <Label Content="Введені точки:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                <ListView x:Name="lstPoints" HorizontalAlignment="Left" Height="159" Margin="10,36,0,0" VerticalAlignment="Top" Width="165" KeyDown="lstPoints_KeyDown">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="X" 
+        						DisplayMemberBinding="{Binding X}"
+        						Width="73"/>
+                            <GridViewColumn Header="Y"
+        						DisplayMemberBinding="{Binding Y}"
+        						Width="73"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
+        </Grid>
+        <Canvas x:Name="canvas" HorizontalAlignment="Center" Height="364" Margin="0,-220,0,0" VerticalAlignment="Center" Width="364"/>
+    </Grid>
+</Window>
