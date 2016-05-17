@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 
 namespace Coursework
 {
+    
     [Serializable]
     abstract class InterpolationMethod
     {
         public abstract void Count(Interval interval, Point point);
         public abstract void InitializeCoefficients(Interval interval);
         public abstract List<Interval> BuildIntervals(ObservableCollection<Point> points);
+        public abstract InterpolationType GetInterpolationType();
     }
 }

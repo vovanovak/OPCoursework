@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Coursework.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Інтерполяція" Height="626" Width="996" Closed="Window_Closed">
+        Name="Window" Title="Інтерполяція" Height="626" Width="996" Closed="Window_Closed" SizeChanged="Window_SizeChanged">
     <Grid Name="mainGrid" Margin="0,1,2,-3">
         <Grid HorizontalAlignment="Left" Height="162" Margin="10,266,0,0" VerticalAlignment="Top" Width="185"/>
         <Grid Margin="48,0,37,24" HorizontalAlignment="Center" Height="219" VerticalAlignment="Bottom">
@@ -45,6 +45,6 @@
                 </ListView>
             </Grid>
         </Grid>
-        <Canvas x:Name="canvas" HorizontalAlignment="Center" Height="364" Margin="0,-220,0,0" VerticalAlignment="Center" Width="364"/>
+        <Canvas x:Name="canvas" Height="364" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="322,10,300,223" Width="364"/>
     </Grid>
 </Window>

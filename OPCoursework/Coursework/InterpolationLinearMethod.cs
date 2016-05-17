@@ -38,13 +38,17 @@ namespace Coursework
 
             points = new ObservableCollection<Point>(points.OrderBy(p => p.X));
 
-
             for (int i = 0; i < points.Count - 1; i++)
             {
                 intervals.Add(new Interval() { Ranges = new Point[] { points[i], points[i + 1] }});                
             }
 
             return intervals;
+        }
+
+        public override InterpolationType GetInterpolationType()
+        {
+            return InterpolationType.Linear;
         }
     }
 }

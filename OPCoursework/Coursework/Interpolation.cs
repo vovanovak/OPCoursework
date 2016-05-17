@@ -68,7 +68,9 @@ namespace Coursework
                 if (Points.Last().X == point.X)
                 {
                     HasTemporaryPoint = false;
-                   
+                    Points.Last().Y = point.Y;
+                    Intervals = Method.BuildIntervals(Points);
+                    Serialize();   
                 }
                 return;
             }
@@ -82,7 +84,7 @@ namespace Coursework
             else
             {
                 Points.Add(point);
-                if (Points.Count > 1)
+                if (Points.Count > 1 && Method.GetInterpolationType() == InterpolationType.Square && (Points.Count - 3) % 2 != 0) 
                 {
                     HasTemporaryPoint = true;
                     Point[] max = Points.OrderByDescending(p => p.X).ToArray();

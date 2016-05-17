@@ -53,5 +53,11 @@ namespace Coursework
 
             return intervals;
         }
+
+
+        public override InterpolationType GetInterpolationType()
+        {
+            return InterpolationType.Square;
+        }
     }
 }
