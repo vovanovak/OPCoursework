@@ -22,5 +22,20 @@ namespace Coursework
         {
             return (p.X >= Ranges[0].X && p.X <= Ranges[Ranges.Length - 1].X);
         }
+
+        
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("[");
+            for (int i = 0; i < Ranges.Length - 1; i++)
+            {
+                sb.Append(string.Format("({0};{1}), ", Ranges[i].X, Ranges[i].Y));
+            }
+
+            sb.Append(string.Format("({0};{1})", Ranges.Last().X, Ranges.Last().Y));
+            sb.Append("]");
+            return sb.ToString();
+        }
     }
 }

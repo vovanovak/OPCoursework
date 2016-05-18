@@ -56,6 +56,7 @@ namespace Coursework
                 if (i.IsPointInInterval(point))
                 {
                     Method.Count(i, point);
+                    WriteResultToFile(point, i);
                     break;
                 }
             }
@@ -84,13 +85,7 @@ namespace Coursework
             else
             {
                 Points.Add(point);
-                if (Points.Count > 1 && Method.GetInterpolationType() == InterpolationType.Square && (Points.Count - 3) % 2 != 0) 
-                {
-                    HasTemporaryPoint = true;
-                    Point[] max = Points.OrderByDescending(p => p.X).ToArray();
-                    Point temp = new Point(2 * max[0].X - max[1].X, max[1].Y);
-                    Points.Add(temp);
-                }
+                AddTemporaryPoint();
             }
 
             Intervals = Method.BuildIntervals(Points);
@@ -107,6 +102,44 @@ namespace Coursework
                 }
             }
             return null;
+        }
+
+        public void RemovePoint(int selectedIndex)
+        {
+            if (HasTemporaryPoint)
+            {
+                Points.Remove(Points.Last());
+                HasTemporaryPoint = false;
+            }
+            if (selectedIndex != -1)
+            {
+                if (selectedIndex < Points.Count)
+                {
+                    Points.RemoveAt(selectedIndex);
+                }
+            }
+            Serialize();
+        }
+
+        public void RemoveTemporaryPoint()
+        {
+            if (HasTemporaryPoint)
+            {
+                HasTemporaryPoint = false;
+                Points.Remove(Points.Last());
+                Intervals = Method.BuildIntervals(Points);
+            }
+        }
+
+        public void AddTemporaryPoint()
+        {
+            if (Points.Count > 1 && Method.GetInterpolationType() == InterpolationType.Square && (Points.Count - 3) % 2 != 0)
+            {
+                HasTemporaryPoint = true;
+                Point[] max = Points.OrderByDescending(p => p.X).ToArray();
+                Point temp = new Point(2 * max[0].X - max[1].X, max[1].Y);
+                Points.Add(temp);
+            }
         }
 
         public bool Serialize()
@@ -127,6 +160,7 @@ namespace Coursework
                 return false;
             }
         }
+
         public bool Deserialize()
         {
             try
@@ -148,6 +182,23 @@ namespace Coursework
                 
                 return false;
             }
+        }
+
+        public void WriteResultToFile(Point point, Interval interval)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine(string.Format("Method: {0}", (Method.GetInterpolationType() == InterpolationType.Linear) ? "Linear" : "Square"));
+            sb.Append("Intervals: ");
+            for (int i = 0; i < Intervals.Count - 1; i++)
+            {
+                sb.Append(Intervals[i].ToString() + ", ");
+            }
+            sb.AppendLine(Intervals.Last().ToString() + ";");
+            sb.AppendLine("Current interval: " + interval.ToString() + ";");
+            sb.AppendLine(string.Format("Point X: {0}; Y: {1};", point.X, point.Y));
+            sb.AppendLine();
+
+            File.AppendAllText("results.txt", sb.ToString());
         }
     }
 }

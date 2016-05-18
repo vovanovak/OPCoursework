@@ -351,77 +351,101 @@ namespace Coursework
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             double x;
-            double.TryParse(txtAddX.Text, out x);
+            ValidationResult valid = isNumberStringValid(txtAddX.Text);
+            if (valid != ValidationResult.Proper)
+            {
+                outputErrorMessage(valid, "X");
+            }
+            else
+            {
+                double.TryParse(txtAddX.Text, out x);
+                valid = isNumberStringValid(txtAddY.Text);
+                double y;
+                if (valid == ValidationResult.Proper)
+                {
+                    double.TryParse(txtAddY.Text, out y);
 
-            double y;
-            double.TryParse(txtAddY.Text, out y);
+                    Point p = new Point(x, y);
 
+                    interpolation.AddPoint(p);
 
-            Point p = new Point(x, y);
-            
-            interpolation.AddPoint(p);
+                    lstPoints.Items.Refresh();
 
-            lstPoints.Items.Refresh();
+                    draw();
+                }
+                else
+                {
+                    outputErrorMessage(valid, "Y");
+                }
+            }
+        }
 
-            draw();
+        private void outputErrorMessage(ValidationResult res, string fieldName)
+        {
+            switch (res)
+            {
+                case ValidationResult.Empty:
+                    MessageBox.Show("Поле " + fieldName + " пусте!", "Інтерполяція",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    break;
+                case ValidationResult.NotValidEnter:
+                    MessageBox.Show("Неправильно введене число " + fieldName , "Інтерполяція",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    break;
+            }
         }
 
         private void btnCount_Click(object sender, RoutedEventArgs e)
         {
+            ValidationResult valid = isNumberStringValid(txtX.Text);
 
-            switch (isNumberStringValid(txtX.Text))
+            if (valid != ValidationResult.Proper)
             {
-                case ValidationResult.Empty:
-                    MessageBox.Show("Поле Х пусте!", "Інтерполяція", 
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                case ValidationResult.NotValidEnter:
-                    MessageBox.Show("Неправильно введене число Х", "Інтерполяція",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-            }
-
-            double x;
-            double.TryParse(txtX.Text, out x);
-
-            Point p = new Point(x, 0);
-
-            interpolation.Count(p);
-
-            draw();
-
-            Interval interval = interpolation.GetInterval(p);
-
-            if (interval != null)
-            {
-                Ellipse point = new Ellipse();
-                point.Width = 4;
-                point.Height = 4;
-                point.StrokeThickness = 1.5;
-                point.Fill = new SolidColorBrush(Colors.Black);
-                point.Margin = new Thickness(canvas.Width / 2 + step / stepIteration * p.X - 2, (canvas.Height / 2) - step / stepIteration * p.Y - 2, 0, 0);
-                canvas.Children.Add(point);
-
-                Ellipse pointBorder = new Ellipse();
-                pointBorder.Width = 9;
-                pointBorder.Height = 9;
-                pointBorder.StrokeThickness = 1.5;
-                pointBorder.Stroke = new SolidColorBrush(Colors.Red);
-                pointBorder.Margin = new Thickness(canvas.Width / 2 + step / stepIteration * p.X - 4.5, (canvas.Height / 2) - step / stepIteration * p.Y - 4.5, 0, 0);
-                canvas.Children.Add(pointBorder);
-
-                lblY.Content = p.Y;
-
-                if (drawPolynom.IsChecked != true)
-                    drawInterval(interval);
+                outputErrorMessage(valid, "X");
             }
             else
             {
-                MessageBox.Show("Точка не належить ні одному з даних інтервалів!", "Інтерполяція",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                lblY.Content = "Невизначеність";
+                double x;
+                double.TryParse(txtX.Text, out x);
+
+                Point p = new Point(x, 0);
+
+                interpolation.Count(p);
+
+                draw();
+
+                Interval interval = interpolation.GetInterval(p);
+
+                if (interval != null)
+                {
+                    Ellipse point = new Ellipse();
+                    point.Width = 4;
+                    point.Height = 4;
+                    point.StrokeThickness = 1.5;
+                    point.Fill = new SolidColorBrush(Colors.Black);
+                    point.Margin = new Thickness(canvas.Width / 2 + step / stepIteration * p.X - 2, (canvas.Height / 2) - step / stepIteration * p.Y - 2, 0, 0);
+                    canvas.Children.Add(point);
+
+                    Ellipse pointBorder = new Ellipse();
+                    pointBorder.Width = 9;
+                    pointBorder.Height = 9;
+                    pointBorder.StrokeThickness = 1.5;
+                    pointBorder.Stroke = new SolidColorBrush(Colors.Red);
+                    pointBorder.Margin = new Thickness(canvas.Width / 2 + step / stepIteration * p.X - 4.5, (canvas.Height / 2) - step / stepIteration * p.Y - 4.5, 0, 0);
+                    canvas.Children.Add(pointBorder);
+
+                    lblY.Content = p.Y;
+
+                    if (drawPolynom.IsChecked != true)
+                        drawInterval(interval);
+                }
+                else
+                {
+                    MessageBox.Show("Точка не належить ні одному з даних інтервалів!", "Інтерполяція",
+                            MessageBoxButton.OK, MessageBoxImage.Warning);
+                    lblY.Content = "Невизначеність";
+                }
             }
-            
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
@@ -443,10 +467,21 @@ namespace Coursework
             if (interpolation != null)
             {
                 if (comboBoxMethod.SelectedIndex == 0)
+                {
+                    interpolation.RemoveTemporaryPoint();
                     interpolation = new Interpolation(interpolation.Points, new InterpolationLinearMethod());
+                   
+           
+                }
                 else
+                {
                     interpolation = new Interpolation(interpolation.Points, new InterpolationSquareMethod());
+                    interpolation.AddTemporaryPoint();
+                    interpolation.Intervals = interpolation.Method.BuildIntervals(interpolation.Points);
+                    
+                }
 
+                lstPoints.Items.Refresh();
                 draw();
             }
         }
@@ -468,26 +503,8 @@ namespace Coursework
         {
             if (lstPoints.SelectedIndex >= 0)
             {
-                if (interpolation.HasTemporaryPoint)
-                {
-                    interpolation.Points.Remove(interpolation.Points.Last());
-                    interpolation.HasTemporaryPoint = false;
-                }
-                if (lstPoints.SelectedIndex != -1)
-                {
-                    if (interpolation.HasTemporaryPoint)
-                    {
-                        interpolation.HasTemporaryPoint = false;
-                    }
-                    if (lstPoints.SelectedIndex < interpolation.Points.Count - 1)
-                    {
-                        interpolation.Points.Remove(interpolation.Points.Last());
-                    }
-
-                    interpolation.Points.RemoveAt(lstPoints.SelectedIndex);
-                }
+                interpolation.RemovePoint(lstPoints.SelectedIndex);
                 interpolation.Intervals = interpolation.Method.BuildIntervals(interpolation.Points);
-                
                 lstPoints.Items.Refresh();
                 draw();
             }
@@ -512,7 +529,7 @@ namespace Coursework
 
         private ValidationResult isNumberStringValid(string str)
         {
-            if (string.IsNullOrEmpty(txtX.Text) || string.IsNullOrWhiteSpace(txtX.Text))
+            if (string.IsNullOrEmpty(str) || string.IsNullOrWhiteSpace(str))
             {
                 
                 return ValidationResult.Empty;
@@ -520,7 +537,7 @@ namespace Coursework
            
             for (int i = 0; i < str.Length; i++)
             {
-                if (!(char.IsDigit(str.ElementAt(i)) || separator.Contains(str[i])))
+                if (!(char.IsDigit(str.ElementAt(i)) || separator.Contains(str[i]) || str[i] == '-'))
                 {
                    
                     return ValidationResult.NotValidEnter;
