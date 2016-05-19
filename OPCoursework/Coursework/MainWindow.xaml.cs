@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,13 +25,13 @@ namespace Coursework
     public partial class MainWindow : Window
     {
         Interpolation interpolation;
+        string filename = "results.txt";
         int step = 20;
         double k = 5;
         int maxCount = 9;
         int lineCoef = 25;
         NumberFormatInfo info;
         string separator;
-
         double stepIteration = 0;
 
         public MainWindow()
@@ -410,7 +412,12 @@ namespace Coursework
 
                 Point p = new Point(x, 0);
 
-                interpolation.Count(p);
+
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                interpolation.Count(p, filename);
+                watch.Stop();
+                var elapsedMs = watch.ElapsedMilliseconds;
+
 
                 draw();
 
@@ -418,6 +425,11 @@ namespace Coursework
 
                 if (interval != null)
                 {
+
+                    lblRunTime.Content = elapsedMs + "мс. ";
+                    lblOperationsCount.Content = InterpolationMethod.OperationCount;
+                    lblIterationsCount.Content = Interpolation.IterationCount;
+
                     Ellipse point = new Ellipse();
                     point.Width = 4;
                     point.Height = 4;
@@ -545,6 +557,16 @@ namespace Coursework
             }
 
             return ValidationResult.Proper;
+        }
+
+        private void btnResultsOpen_Click(object sender, RoutedEventArgs e)
+        {
+            if (File.Exists(filename)){
+                Process.Start("notepad.exe", filename);
+            } else {
+                 MessageBox.Show("Файл " + filename + " не існує!", "Інтерполяція",
+                            MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
     }
 }

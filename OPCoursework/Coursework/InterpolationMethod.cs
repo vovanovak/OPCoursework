@@ -11,6 +11,8 @@ namespace Coursework
     [Serializable]
     abstract class InterpolationMethod
     {
+        public static int OperationCount { get; set; }
+
         public abstract void Count(Interval interval, Point point);
         public abstract void InitializeCoefficients(Interval interval);
         public abstract List<Interval> BuildIntervals(ObservableCollection<Point> points);

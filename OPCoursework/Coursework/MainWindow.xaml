@@ -4,7 +4,7 @@
         Name="Window" Title="Інтерполяція" Height="626" Width="996" Closed="Window_Closed" SizeChanged="Window_SizeChanged">
     <Grid Name="mainGrid" Margin="0,1,2,-3">
         <Grid HorizontalAlignment="Left" Height="162" Margin="10,266,0,0" VerticalAlignment="Top" Width="185"/>
-        <Grid Margin="48,0,37,24" HorizontalAlignment="Center" Height="219" VerticalAlignment="Bottom">
+        <Grid Margin="92,0,62,19" HorizontalAlignment="Center" Height="219" VerticalAlignment="Bottom" Width="832">
             <Grid HorizontalAlignment="Left" Height="209" Margin="13,6,0,0" VerticalAlignment="Top" Width="185">
                 <Label Content="Додати точку:" HorizontalAlignment="Left" Margin="10,14,0,0" VerticalAlignment="Top" Height="26" Width="86"/>
                 <Label Content="X:" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Height="26" Width="20"/>
@@ -44,6 +44,13 @@
                     </ListView.View>
                 </ListView>
             </Grid>
+            <Label Content="Кількість операцій: " HorizontalAlignment="Left" Margin="628,20,0,0" VerticalAlignment="Top"/>
+            <Label Content="Час виконання: " HorizontalAlignment="Left" Margin="628,141,0,0" VerticalAlignment="Top"/>
+            <Label Content="Кількість ітерацій: " HorizontalAlignment="Left" Margin="628,85,0,0" VerticalAlignment="Top"/>
+            <Button x:Name="btnResultsOpen" Content="Відкрити файл результатів" HorizontalAlignment="Left" Margin="628,185,0,0" VerticalAlignment="Top" Width="155" Click="btnResultsOpen_Click"/>
+            <Label x:Name="lblOperationsCount" HorizontalAlignment="Left" Margin="745,20,0,0" VerticalAlignment="Top"/>
+            <Label x:Name="lblIterationsCount" HorizontalAlignment="Left" Margin="745,85,0,0" VerticalAlignment="Top"/>
+            <Label x:Name="lblRunTime" HorizontalAlignment="Left" Margin="745,141,0,0" VerticalAlignment="Top"/>
         </Grid>
         <Canvas x:Name="canvas" Height="364" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="322,10,300,223" Width="364"/>
     </Grid>

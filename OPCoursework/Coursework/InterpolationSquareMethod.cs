@@ -12,9 +12,11 @@ namespace Coursework
     {
         public override void Count(Interval interval, Point point)
         {
+            OperationCount = 0;
             InitializeCoefficients(interval);
 
             point.Y = interval.Сoefficients[0] + interval.Сoefficients[1] * point.X + interval.Сoefficients[2] * Math.Pow(point.X, 2);
+            OperationCount += 5;
         }
 
         public override void InitializeCoefficients(Interval interval)
@@ -29,10 +31,16 @@ namespace Coursework
                     ((interval.Ranges[1].X - interval.Ranges[0].X) *
                     (interval.Ranges[2].X - interval.Ranges[1].X)));
 
+                OperationCount += 11;
+
                 interval.Сoefficients[1] = ((interval.Ranges[1].Y - interval.Ranges[0].Y) / (interval.Ranges[1].X - interval.Ranges[0].X)) -
                     interval.Сoefficients[2] * (interval.Ranges[1].X + interval.Ranges[0].X);
 
+                OperationCount += 6;
+
                 interval.Сoefficients[0] = interval.Ranges[0].Y - interval.Сoefficients[1] * interval.Ranges[0].X - interval.Сoefficients[2] * Math.Pow(interval.Ranges[0].X, 2);
+
+                OperationCount += 5;
             }
         }
 

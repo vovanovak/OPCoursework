@@ -12,6 +12,7 @@ namespace Coursework
     [Serializable]
     class Interpolation
     {
+        public static int IterationCount { get; set; }
         public ObservableCollection<Point> Points { get; set; }
         public List<Interval> Intervals { get; set; }
         public InterpolationMethod Method { get; set; }
@@ -49,16 +50,19 @@ namespace Coursework
             }
         }
 
-        public void Count(Point point)
+        public void Count(Point point, string filename)
         {
+            IterationCount = 0;
             foreach (var i in Intervals)
             {
+                IterationCount++;
                 if (i.IsPointInInterval(point))
                 {
                     Method.Count(i, point);
-                    WriteResultToFile(point, i);
+                    WriteResultToFile(filename, point, i);
                     break;
                 }
+               
             }
         }
 
@@ -184,7 +188,7 @@ namespace Coursework
             }
         }
 
-        public void WriteResultToFile(Point point, Interval interval)
+        public void WriteResultToFile(string filename, Point point, Interval interval)
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(string.Format("Method: {0}", (Method.GetInterpolationType() == InterpolationType.Linear) ? "Linear" : "Square"));
@@ -198,7 +202,7 @@ namespace Coursework
             sb.AppendLine(string.Format("Point X: {0}; Y: {1};", point.X, point.Y));
             sb.AppendLine();
 
-            File.AppendAllText("results.txt", sb.ToString());
+            File.AppendAllText(filename, sb.ToString());
         }
     }
 }
