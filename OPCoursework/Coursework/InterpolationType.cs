@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Coursework
 {
-    public enum InterpolationType
+    public enum InterpolationType // Тип інтерполяції
     {
         Linear, Square
     }

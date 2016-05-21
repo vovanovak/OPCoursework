@@ -12,11 +12,11 @@ namespace Coursework
     [Serializable]
     class Interpolation
     {
-        public static int IterationCount { get; set; }
-        public ObservableCollection<Point> Points { get; set; }
-        public List<Interval> Intervals { get; set; }
-        public InterpolationMethod Method { get; set; }
-        public bool HasTemporaryPoint { get; set; }
+        public static int IterationCount { get; set; } // Кількість ітерацій
+        public ObservableCollection<Point> Points { get; set; } // Колекція точок
+        public List<Interval> Intervals { get; set; } // Список інтервалів
+        public InterpolationMethod Method { get; set; } // Метод інтерполяції
+        public bool HasTemporaryPoint { get; set; } // Логічне поле, яке описує чи має колекція тимчасову точку
 
         public Interpolation()
         {
@@ -39,7 +39,8 @@ namespace Coursework
                 bool res = this.Deserialize();
                 if (!res)
                 {
-                    Points = new ObservableCollection<Point>(new Point[] { new Point(3, 1), new Point(0, 4), new Point(1, 1), new Point(5, 6) });
+                    Points = new ObservableCollection<Point>();
+                    Intervals = new List<Interval>();
                     Method = new InterpolationLinearMethod();
                 }
             }
@@ -50,57 +51,64 @@ namespace Coursework
             }
         }
 
-        public void Count(Point point, string filename)
+        public void Count(Point point, string filename) // Обрахування значення Y
         {
             IterationCount = 0;
-            foreach (var i in Intervals)
+            foreach (var i in Intervals) // Знаходимо необхідний інтервал
             {
                 IterationCount++;
-                if (i.IsPointInInterval(point))
+                if (i.IsPointInInterval(point)) 
                 {
-                    Method.Count(i, point);
-                    WriteResultToFile(filename, point, i);
+                    Method.Count(i, point); // Обраховуємо значення Y
+                    WriteResultToFile(filename, point, i); // Записуємо в файл результатів
                     break;
                 }
                
             }
         }
 
-        public void AddPoint(Point point)
+        public bool AddPoint(Point point) // Додавання точки
         {
-            if (Points.Any(p => p.X == point.X))
+            if (Points.Count > 0)
             {
-                if (Points.Last().X == point.X)
+                if (Points.Last().X == point.X && HasTemporaryPoint)
                 {
-                    HasTemporaryPoint = false;
-                    Points.Last().Y = point.Y;
-                    Intervals = Method.BuildIntervals(Points);
-                    Serialize();   
+                    HasTemporaryPoint = false; // Якщо остання точка є тимчасовою
+                    Points.Last().Y = point.Y; // і Х тимчасової = Х точки, яку ми додаємо
+                    //Присвоюємо ординаті останньої точки значення Y 
                 }
-                return;
-            }
+                else
+                {
+                    if (Points.Any(p => p.X == point.X)) // Якщо містить точку, яка не є тимчасовою
+                        return false; // Повертаємо хибу, бо точки з однаковими абсцисами не можна додавати
 
-            if (HasTemporaryPoint)
-            {
-                Points.Remove(Points.Last());
-                HasTemporaryPoint = false;
-                Points.Add(point);
+                    if (HasTemporaryPoint) 
+                    {
+                        Points.Remove(Points.Last()); // Якщо має тимчасову точку, видаляємо її
+                        HasTemporaryPoint = false;
+                        Points.Add(point); //Додаємо нову точку
+                    }
+                    else
+                    {
+                        Points.Add(point); //Інакше додаємо точку
+                        AddTemporaryPoint();
+                    }
+                }
             }
             else
             {
                 Points.Add(point);
-                AddTemporaryPoint();
             }
-
-            Intervals = Method.BuildIntervals(Points);
-            Serialize();
+            Intervals = Method.BuildIntervals(Points); // Ініціалізуємо список інтервалів
+            Serialize(); // Зберігаємо зміни
+            return true;
         }
 
         public Interval GetInterval(Point p)
         {
             foreach (var i in Intervals)
             {
-                if (i.IsPointInInterval(p))
+                if (i.IsPointInInterval(p)) // Знаходимо інтервал, в якому міститься точка p
                 {
                     return i;
                 }
@@ -108,24 +116,22 @@ namespace Coursework
             return null;
         }
 
-        public void RemovePoint(int selectedIndex)
+        public void RemovePoint(int selectedIndex) //Видалення точки за вказаним індексом
         {
             if (HasTemporaryPoint)
             {
                 Points.Remove(Points.Last());
                 HasTemporaryPoint = false;
             }
-            if (selectedIndex != -1)
+            if (selectedIndex >= 0 && selectedIndex < Points.Count)
             {
-                if (selectedIndex < Points.Count)
-                {
-                    Points.RemoveAt(selectedIndex);
-                }
+                Points.RemoveAt(selectedIndex);
             }
+            Intervals = Method.BuildIntervals(Points);
             Serialize();
         }
 
-        public void RemoveTemporaryPoint()
+        public void RemoveTemporaryPoint() // Видалення тимчасової точки
         {
             if (HasTemporaryPoint)
             {
@@ -137,7 +143,8 @@ namespace Coursework
 
         public void AddTemporaryPoint()
         {
-            if (Points.Count > 1 && Method.GetInterpolationType() == InterpolationType.Square && (Points.Count - 3) % 2 != 0)
+            if (Points.Count > 1 && Method.GetInterpolationType() == 
+                InterpolationType.Square && (Points.Count - 3) % 2 != 0) // Умова додавання тимчасової точки
             {
                 HasTemporaryPoint = true;
                 Point[] max = Points.OrderByDescending(p => p.X).ToArray();
@@ -146,9 +153,8 @@ namespace Coursework
             }
         }
 
-        public bool Serialize()
+        public bool Serialize() // Збереження змін в файл
         {
-            
             try
             {
                 using (FileStream fs = File.Open("data.bin", FileMode.Create))
@@ -165,7 +171,7 @@ namespace Coursework
             }
         }
 
-        public bool Deserialize()
+        public bool Deserialize() // Зчитування даних з файлу
         {
             try
             {
@@ -183,12 +189,11 @@ namespace Coursework
             }
             catch (IOException e)
             {
-                
                 return false;
             }
         }
 
-        public void WriteResultToFile(string filename, Point point, Interval interval)
+        public void WriteResultToFile(string filename, Point point, Interval interval) // Записування результатів в файл
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(string.Format("Method: {0}", (Method.GetInterpolationType() == InterpolationType.Linear) ? "Linear" : "Square"));

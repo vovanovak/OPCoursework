@@ -2,24 +2,22 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Coursework
 {
     [Serializable]
     class InterpolationSquareMethod: InterpolationMethod
     {
-        public override void Count(Interval interval, Point point)
+        public override void Count(Interval interval, Point point) // Обрахування значення Y
         {
             OperationCount = 0;
             InitializeCoefficients(interval);
-
+            // Обрахування значення Y, за коефіціентами проміжку
             point.Y = interval.Сoefficients[0] + interval.Сoefficients[1] * point.X + interval.Сoefficients[2] * Math.Pow(point.X, 2);
             OperationCount += 5;
         }
 
-        public override void InitializeCoefficients(Interval interval)
+        public override void InitializeCoefficients(Interval interval) // Ініціалізація коефіціентів
         {
             if (interval.Сoefficients.Length <= 2)
             {
@@ -44,7 +42,7 @@ namespace Coursework
             }
         }
 
-        public override List<Interval> BuildIntervals(ObservableCollection<Point> points)
+        public override List<Interval> BuildIntervals(ObservableCollection<Point> points) // Побудова інтервалів
         {
             List<Interval> intervals = new List<Interval>();
 
@@ -56,14 +54,11 @@ namespace Coursework
                 intervals.Add(new Interval() { Ranges = new Point[] { points[i], points[i + 1], points[i + 2] }});
             }
 
-            //if (hasTemporaryPoint)
-            //    intervals.Last().HasTemporaryPoint = true;
-
             return intervals;
         }
 
 
-        public override InterpolationType GetInterpolationType()
+        public override InterpolationType GetInterpolationType() // Повернення типу інтерполяції
         {
             return InterpolationType.Square;
         }

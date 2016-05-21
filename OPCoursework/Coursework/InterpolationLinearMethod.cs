@@ -17,13 +17,14 @@ namespace Coursework
             {
                 InitializeCoefficients(interval);
 
-                point.Y = interval.Сoefficients[0] + interval.Сoefficients[1] * point.X;
+                point.Y = interval.Сoefficients[0] + interval.Сoefficients[1] * point.X; 
+                // Обрахування значення Y, за коефіціентами проміжку
 
                 OperationCount += 2;
             }
         }
 
-        public override void InitializeCoefficients(Interval interval)
+        public override void InitializeCoefficients(Interval interval) // Ініціалізуємо коефіціенти
         {
             if (interval.Сoefficients.Length < 1 || interval.Сoefficients.Length > 2)
             {
@@ -39,7 +40,7 @@ namespace Coursework
             }
         }
 
-        public override List<Interval> BuildIntervals(ObservableCollection<Point> points)
+        public override List<Interval> BuildIntervals(ObservableCollection<Point> points) // Побудова інтервалів
         {
             List<Interval> intervals = new List<Interval>();
 
@@ -53,7 +54,7 @@ namespace Coursework
             return intervals;
         }
 
-        public override InterpolationType GetInterpolationType()
+        public override InterpolationType GetInterpolationType() // Повернення типу інтерполяції
         {
             return InterpolationType.Linear;
         }

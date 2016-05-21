@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace Coursework
 {
     [Serializable]
-    class Interval
+    class Interval // Інтервал
     {
-        public Point[] Ranges { get; set; }
-        public double[] Сoefficients { get; set; }
+        public Point[] Ranges { get; set; } // Точки, що входять в інтервал
+        public double[] Сoefficients { get; set; } // Коефіціенти
 
         public Interval()
         {
@@ -18,7 +18,7 @@ namespace Coursework
             Сoefficients = new double[0];
         }
 
-        public bool IsPointInInterval(Point p)
+        public bool IsPointInInterval(Point p) // Чи міститься точка в інтервалі
         {
             return (p.X >= Ranges[0].X && p.X <= Ranges[Ranges.Length - 1].X);
         }

@@ -24,21 +24,21 @@ namespace Coursework
     /// </summary>
     public partial class MainWindow : Window
     {
-        Interpolation interpolation;
-        string filename = "results.txt";
-        int step = 20;
-        double k = 5;
-        int maxCount = 9;
-        int lineCoef = 25;
+        Interpolation interpolation; // Інтерполяція
+        string filename = "results.txt"; // Файл результатів
+        int step = 20; // Крок, за який відрисовується 1 поділка
+        double k = 5; // 0.5 довжини поділки на осі координат
+        int maxCount = 9; // Максимальна кількість поділок
+        int lineCoef = 25; // Коефіціент відрисування стрілки
         NumberFormatInfo info;
-        string separator;
-        double stepIteration = 0;
+        string separator; // Роздільник в дроб. числі
+        double stepIteration = 0; // Крок за 1 ітерацію
 
         public MainWindow()
         {
             InitializeComponent();
 
-            info = CultureInfo.CurrentCulture.NumberFormat;
+            info = CultureInfo.CurrentCulture.NumberFormat; // Визначення роздільника(".", ",") в дробовому числі
             separator = info.CurrencyDecimalSeparator;
 
             interpolation = new Interpolation(true);
@@ -50,7 +50,7 @@ namespace Coursework
             
             lstPoints.ItemsSource = interpolation.Points;
             lstPoints.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription
-                ("X", System.ComponentModel.ListSortDirection.Ascending));
+                ("X", System.ComponentModel.ListSortDirection.Ascending)); // Сортування списку точок за координатою Х
             
             draw();
         }
@@ -59,14 +59,17 @@ namespace Coursework
         {
             canvas.Children.Clear();
 
-            drawCoords();
-            drawIntervals();
-            drawPoints();
+            if (interpolation.Points.Count > 0)
+            {
+                drawCoords();
+                drawIntervals();
+                drawPoints();
+            }
         }
 
-        private void drawCoords()
+        private void drawCoords() // Відрисування осі координат
         {
-
+            
             double countX = interpolation.Points.Max(p => Math.Abs(p.X));
             double countY = interpolation.Points.Max(p => Math.Abs(p.Y));
             maxCount = (int)(Math.Floor(countX > countY ? countX : countY));
@@ -77,13 +80,16 @@ namespace Coursework
             test.Content = Convert.ToString(maxCount) + ".0";
             test.Measure(desiredSize);
            
-            step = (int)test.DesiredSize.Width;
+            step = (int)test.DesiredSize.Width; // Визначення кроку
 
             if (step < 25)
                 step = 25;
 
             stepIteration = ((maxCount) / ((double)(canvas.Width / 2 - step / 2) / step));
+            //Визначення кроку ітерації
 
+
+            //Відрисування осі Х
             Line myLine1 = new Line();
 
             myLine1.Stroke = System.Windows.Media.Brushes.Black;
@@ -152,7 +158,9 @@ namespace Coursework
                     canvas.Children.Add(lbl);
                 }
             }
+            //----------------------------------
 
+            //Відрисування осі Y
             Line myLine2 = new Line();
 
             myLine2.Stroke = System.Windows.Media.Brushes.Black;
@@ -191,7 +199,7 @@ namespace Coursework
                 }
             }
 
-
+           
             Label lbl0 = new Label();
             lbl0.Content = 0;
             lbl0.FontSize = 11;
@@ -225,7 +233,10 @@ namespace Coursework
                 }
 
             }
+            //----------------------------------
 
+
+            // Відрисування стрілок на коорд. осях і назв осей
             Line lineArrowX1 = new Line();
 
             lineArrowX1.Stroke = System.Windows.Media.Brushes.Black;
@@ -278,9 +289,11 @@ namespace Coursework
             lblY.FontSize = 12;
             lblY.Margin = new Thickness(canvas.Width / 2 - 23.5, -10, 0, 0);
             canvas.Children.Add(lblY);
+
+            //----------------------------------
         }
 
-        private void drawIntervals()
+        private void drawIntervals() // Відрисовка інтервалів
         {
             if (drawPolynom.IsChecked == true)
             {
@@ -291,9 +304,9 @@ namespace Coursework
             }
         }
 
-        private void drawInterval(Interval interval)
+        private void drawInterval(Interval interval) // Відрисовка інтервалу
         {
-            if (comboBoxMethod.SelectedIndex == 0)
+            if (comboBoxMethod.SelectedIndex == 0) // Якщо метод лінійний - рисуємо лінію
             {
                 Line line = new Line();
 
@@ -306,7 +319,7 @@ namespace Coursework
 
                 canvas.Children.Add(line);
             }
-            else
+            else // Якщо метод квадратичний - рисуємо параболу
             {
                 double diff = (interval.Ranges[2].X - interval.Ranges[0].X);
                 double graphicStep = 0.0025 * Math.Pow(10, Convert.ToString((int)Math.Round(diff, 0)).Length - 1);
@@ -335,7 +348,7 @@ namespace Coursework
 
         }
 
-        private void drawPoints()
+        private void drawPoints() // Відрисовуємо дані точки
         {
             for (int i = 0; i < interpolation.Points.Count; i++)
             {
@@ -350,10 +363,10 @@ namespace Coursework
             }
         }
 
-        private void btnAdd_Click(object sender, RoutedEventArgs e)
+        private void btnAdd_Click(object sender, RoutedEventArgs e) // Додавання точки
         {
             double x;
-            ValidationResult valid = isNumberStringValid(txtAddX.Text);
+            ValidationResult valid = isNumberStringValid(txtAddX.Text); // Валідація
             if (valid != ValidationResult.Proper)
             {
                 outputErrorMessage(valid, "X");
@@ -369,7 +382,14 @@ namespace Coursework
 
                     Point p = new Point(x, y);
 
-                    interpolation.AddPoint(p);
+                    bool res = interpolation.AddPoint(p);
+
+                    if (!res)
+                    {
+
+                        MessageBox.Show("Точка з даною координатою Х вже існує!", "Інтерполяція",
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
 
                     lstPoints.Items.Refresh();
 
@@ -382,7 +402,7 @@ namespace Coursework
             }
         }
 
-        private void outputErrorMessage(ValidationResult res, string fieldName)
+        private void outputErrorMessage(ValidationResult res, string fieldName) // Виведення повідомлення про помилку
         {
             switch (res)
             {
@@ -397,9 +417,9 @@ namespace Coursework
             }
         }
 
-        private void btnCount_Click(object sender, RoutedEventArgs e)
+        private void btnCount_Click(object sender, RoutedEventArgs e) // Обрахування значення Y
         {
-            ValidationResult valid = isNumberStringValid(txtX.Text);
+            ValidationResult valid = isNumberStringValid(txtX.Text); // Валідація
 
             if (valid != ValidationResult.Proper)
             {
@@ -425,6 +445,7 @@ namespace Coursework
 
                 if (interval != null)
                 {
+                    //Відрисування інтервалу і виведення точки
 
                     lblRunTime.Content = elapsedMs + "мс. ";
                     lblOperationsCount.Content = InterpolationMethod.OperationCount;
@@ -446,7 +467,7 @@ namespace Coursework
                     pointBorder.Margin = new Thickness(canvas.Width / 2 + step / stepIteration * p.X - 4.5, (canvas.Height / 2) - step / stepIteration * p.Y - 4.5, 0, 0);
                     canvas.Children.Add(pointBorder);
 
-                    lblY.Content = p.Y;
+                    lblY.Content = Math.Round(p.Y, 6);
 
                     if (drawPolynom.IsChecked != true)
                         drawInterval(interval);
@@ -460,12 +481,12 @@ namespace Coursework
             }
         }
 
-        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        private void btnDelete_Click(object sender, RoutedEventArgs e) // Видалення точки
         {
             deletePoint();
         }
 
-        private void btnDeleteAll_Click(object sender, RoutedEventArgs e)
+        private void btnDeleteAll_Click(object sender, RoutedEventArgs e) //Видалення всіх точок
         {
             interpolation.HasTemporaryPoint = false;
             interpolation.Points.Clear();
@@ -474,7 +495,7 @@ namespace Coursework
             lstPoints.Items.Refresh();
         }
 
-        private void comboBoxMethod_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void comboBoxMethod_SelectionChanged(object sender, SelectionChangedEventArgs e) // Зміна вибору методу
         {
             if (interpolation != null)
             {
@@ -482,15 +503,12 @@ namespace Coursework
                 {
                     interpolation.RemoveTemporaryPoint();
                     interpolation = new Interpolation(interpolation.Points, new InterpolationLinearMethod());
-                   
-           
                 }
                 else
                 {
                     interpolation = new Interpolation(interpolation.Points, new InterpolationSquareMethod());
                     interpolation.AddTemporaryPoint();
                     interpolation.Intervals = interpolation.Method.BuildIntervals(interpolation.Points);
-                    
                 }
 
                 lstPoints.Items.Refresh();
@@ -498,12 +516,12 @@ namespace Coursework
             }
         }
 
-        private void Window_Closed(object sender, EventArgs e)
+        private void Window_Closed(object sender, EventArgs e) // Збереження даних при закриванні форми
         {
             interpolation.Serialize();
         }
 
-        private void lstPoints_KeyDown(object sender, KeyEventArgs e)
+        private void lstPoints_KeyDown(object sender, KeyEventArgs e) // Видалення при натисненні клавіші Del
         {
             if (e.Key == Key.Delete)
             {
@@ -511,7 +529,7 @@ namespace Coursework
             }
         }
 
-        private void deletePoint()
+        private void deletePoint() // Видалення точки
         {
             if (lstPoints.SelectedIndex >= 0)
             {
@@ -522,24 +540,24 @@ namespace Coursework
             }
         }
 
-        private void drawPolynom_Checked(object sender, RoutedEventArgs e)
+        private void drawPolynom_Checked(object sender, RoutedEventArgs e) //Відрисування інтервалів
         {
             drawIntervals();
         }
 
-        private void drawPolynom_Unchecked(object sender, RoutedEventArgs e)
+        private void drawPolynom_Unchecked(object sender, RoutedEventArgs e) // Очищення від інтервалів
         {
             draw();
         }
 
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e) // Зміна розміру вікна
         {
             canvas.Width = e.NewSize.Height / 2;
             canvas.Height = e.NewSize.Height / 2;
             draw();
         }
 
-        private ValidationResult isNumberStringValid(string str)
+        private ValidationResult isNumberStringValid(string str) // Валідація рядка
         {
             if (string.IsNullOrEmpty(str) || string.IsNullOrWhiteSpace(str))
             {
@@ -559,7 +577,7 @@ namespace Coursework
             return ValidationResult.Proper;
         }
 
-        private void btnResultsOpen_Click(object sender, RoutedEventArgs e)
+        private void btnResultsOpen_Click(object sender, RoutedEventArgs e) // Відкриття файлу результатів
         {
             if (File.Exists(filename)){
                 Process.Start("notepad.exe", filename);

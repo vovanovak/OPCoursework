@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Coursework
 {
-    public enum ValidationResult
+    public enum ValidationResult // Результат валідації вводу числа
     {
         Proper, Empty, NotValidEnter
     }

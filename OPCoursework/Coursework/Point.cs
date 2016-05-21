@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Coursework
 {
     [Serializable]
-    class Point
+    class Point // Точка
     {
         public double X { get; set; }
         public double Y { get; set; }
