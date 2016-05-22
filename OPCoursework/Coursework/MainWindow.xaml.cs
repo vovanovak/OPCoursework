@@ -436,8 +436,7 @@ namespace Coursework
                 var watch = System.Diagnostics.Stopwatch.StartNew();
                 interpolation.Count(p, filename);
                 watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-
+                var elapsedMs = (double)watch.ElapsedTicks / TimeSpan.TicksPerMillisecond;
 
                 draw();
 
@@ -447,6 +446,9 @@ namespace Coursework
                 {
                     //Відрисування інтервалу і виведення точки
 
+                    lblInterval.Content = "x є [" + interval.Ranges[0].X + "; " + interval.Ranges.Last().X + "]";
+
+                    lblPolynom.Content = interval.GetPolynom();
                     lblRunTime.Content = elapsedMs + "мс. ";
                     lblOperationsCount.Content = InterpolationMethod.OperationCount;
                     lblIterationsCount.Content = Interpolation.IterationCount;

@@ -63,7 +63,6 @@ namespace Coursework
                     WriteResultToFile(filename, point, i); // Записуємо в файл результатів
                     break;
                 }
-               
             }
         }
 
@@ -118,15 +117,17 @@ namespace Coursework
 
         public void RemovePoint(int selectedIndex) //Видалення точки за вказаним індексом
         {
-            if (HasTemporaryPoint)
-            {
-                Points.Remove(Points.Last());
-                HasTemporaryPoint = false;
-            }
             if (selectedIndex >= 0 && selectedIndex < Points.Count)
             {
-                Points.RemoveAt(selectedIndex);
+                Points.Remove(Points.OrderBy(p => p.X).ElementAt(selectedIndex));
             }
+
+            if (HasTemporaryPoint)
+            {
+                HasTemporaryPoint = false;
+                Points.Remove(Points.Last());
+            }
+
             Intervals = Method.BuildIntervals(Points);
             Serialize();
         }
@@ -204,6 +205,7 @@ namespace Coursework
             }
             sb.AppendLine(Intervals.Last().ToString() + ";");
             sb.AppendLine("Current interval: " + interval.ToString() + ";");
+            sb.AppendLine("Current polynom: " + interval.GetPolynom() + ";");
             sb.AppendLine(string.Format("Point X: {0}; Y: {1};", point.X, point.Y));
             sb.AppendLine();
 
